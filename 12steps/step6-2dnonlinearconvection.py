@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 ###variable declarations
 nx = 101
 ny = 101
-nt = 80
+nt = 400
 c = 1
 dx = 2 / (nx - 1)
 dy = 2 / (ny - 1)
@@ -47,7 +47,7 @@ v[int(.5 / dy):int(1 / dy + 1),int(.5 / dx):int(1 / dx + 1)] = 2
 fig = plt.figure(figsize=(11, 7), dpi=100)
 ax = fig.gca(projection='3d')
 X, Y = numpy.meshgrid(x, y)
-surf = ax.plot_surface(X, Y, u[:], cmap="viridis", rstride=2, cstride=2)
+surf = ax.plot_surface(X, Y, u[:], cmap="viridis")#, rstride=2, cstride=2)
 ax.set_xlabel('$x$')
 ax.set_ylabel('$y$')
 plt.show()
@@ -92,7 +92,7 @@ for n in range(nt + 1): ##loop across number of time steps
     v[:, 0] = 1
     v[:, -1] = 1
 
-    if n % 20 == 0:
+    if n % 50 == 0:
         fig = plt.figure(figsize=(11, 7), dpi=100)
         ax = fig.gca(projection='3d')
         X, Y = numpy.meshgrid(x, y)
