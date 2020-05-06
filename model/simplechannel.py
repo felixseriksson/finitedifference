@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from grid import generategrid
+from visualisation import makebox, visualisevelocityvectors
 
 def pressure_poisson_periodic(p, dx, dy):
     pn = np.empty_like(p)
@@ -159,17 +160,10 @@ for timestep in range(nt):
     print(stepcount)
 
     if stepcount % displayfreq == 0:
-        # fig = plt.figure(figsize = (11,7), dpi=100)
-        # plt.quiver(X[::3, ::3], Y[::3, ::3], u[::3, ::3], v[::3, ::3])
 
         fig = plt.figure(figsize = (11,7), dpi=100)
-        # plot box
-        plt.plot([0,gridsizex],[gridsizey, gridsizey],"k")
-        plt.plot([0,gridsizex],[0, 0],"k")
-        plt.plot([0,0],[0, gridsizey],"k--")
-        plt.plot([gridsizex, gridsizex],[0, gridsizey],"k:")
-        plt.quiver(X, Y, u, v)
-
+        makebox(gridsizex, gridsizey)
+        visualisevelocityvectors(X, Y, u, v, declutter=True)
         plt.show()
 
     stepcount += 1
