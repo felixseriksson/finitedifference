@@ -14,7 +14,7 @@ def pressure_poisson_periodic(p, dx, dy):
                          (2 * (dx**2 + dy**2)) -
                          dx**2 * dy**2 / (2 * (dx**2 + dy**2)) * b[1:-1, 1:-1])
 
-        # Periodic BC Pressure @ x = 2
+        # Periodic BC Pressure @ x = right
         p[1:-1, -1] = (((pn[1:-1, 0] + pn[1:-1, -2])* dy**2 +
                         (pn[2:, -1] + pn[0:-2, -1]) * dx**2) /
                        (2 * (dx**2 + dy**2)) -
@@ -27,7 +27,7 @@ def pressure_poisson_periodic(p, dx, dy):
                       dx**2 * dy**2 / (2 * (dx**2 + dy**2)) * b[1:-1, 0])
         
         # Wall boundary conditions, pressure
-        p[-1, :] =p[-2, :]  # dp/dy = 0 at y = 2
+        p[-1, :] =p[-2, :]  # dp/dy = 0 at y = top
         p[0, :] = p[1, :]  # dp/dy = 0 at y = 0
     
     return p
@@ -72,7 +72,6 @@ for timestep in range(nt):
     un = u.copy()
     vn = v.copy()
 
-    #b = build_up_b(rho, dt, dx, dy, u, v)
     p = pressure_poisson_periodic(p, dx, dy)
 
     u[1:-1, 1:-1] = (un[1:-1, 1:-1] -
@@ -100,7 +99,7 @@ for timestep in range(nt):
                     dt / dy**2 * 
                     (vn[2:, 1:-1] - 2 * vn[1:-1, 1:-1] + vn[0:-2, 1:-1])))
 
-    # Periodic BC u @ x = 2     
+    # Periodic BC u @ x = right
     u[1:-1, -1] = (un[1:-1, -1] - un[1:-1, -1] * dt / dx * 
                 (un[1:-1, -1] - un[1:-1, -2]) -
                 vn[1:-1, -1] * dt / dy * 
@@ -124,7 +123,7 @@ for timestep in range(nt):
                 dt / dy**2 *
                 (un[2:, 0] - 2 * un[1:-1, 0] + un[0:-2, 0])) + F * dt)
 
-    # Periodic BC v @ x = 2
+    # Periodic BC v @ x = right
     v[1:-1, -1] = (vn[1:-1, -1] - un[1:-1, -1] * dt / dx *
                 (vn[1:-1, -1] - vn[1:-1, -2]) - 
                 vn[1:-1, -1] * dt / dy *
@@ -149,7 +148,7 @@ for timestep in range(nt):
                 (vn[2:, 0] - 2 * vn[1:-1, 0] + vn[0:-2, 0])))
 
 
-    # Wall BC: u,v = 0 @ y = 0,2
+    # Wall BC: u,v = 0 @ y = bottom, top
     u[0, :] = 0
     u[-1, :] = 0
     v[0, :] = 0
@@ -164,6 +163,11 @@ for timestep in range(nt):
         # plt.quiver(X[::3, ::3], Y[::3, ::3], u[::3, ::3], v[::3, ::3])
 
         fig = plt.figure(figsize = (11,7), dpi=100)
+        # plot box
+        plt.plot([0,gridsizex],[gridsizey, gridsizey],"k")
+        plt.plot([0,gridsizex],[0, 0],"k")
+        plt.plot([0,0],[0, gridsizey],"k--")
+        plt.plot([gridsizex, gridsizex],[0, gridsizey],"k:")
         plt.quiver(X, Y, u, v)
 
         plt.show()
