@@ -1,9 +1,11 @@
-import numpy
+import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+from grid import generategrid
+
 def pressure_poisson_periodic(p, dx, dy):
-    pn = numpy.empty_like(p)
+    pn = np.empty_like(p)
     
     for _ in range(nit):
         pn = p.copy()
@@ -30,19 +32,20 @@ def pressure_poisson_periodic(p, dx, dy):
     
     return p
 
+
 # variable declarations
 nx = 41
 ny = 41
 nt = 500
 nit = 50 
 c = 1
-dx = 2 / (nx - 1)
-dy = 2 / (ny - 1)
-x = numpy.linspace(0, 2, nx)
-y = numpy.linspace(0, 2, ny)
-X, Y = numpy.meshgrid(x, y)
 displayfreq = 50
 
+# make grid
+gridsizex = 16
+gridsizey = 4
+
+dx, dy, X, Y = generategrid(gridsizex, gridsizey, nx, ny)
 
 ##physical variables
 rho = 1
@@ -51,16 +54,16 @@ F = 1
 dt = .01
 
 #initial conditions
-u = numpy.zeros((ny, nx))
-un = numpy.zeros((ny, nx))
+u = np.zeros((ny, nx))
+un = np.zeros((ny, nx))
 
-v = numpy.zeros((ny, nx))
-vn = numpy.zeros((ny, nx))
+v = np.zeros((ny, nx))
+vn = np.zeros((ny, nx))
 
-p = numpy.ones((ny, nx))
-pn = numpy.ones((ny, nx))
+p = np.ones((ny, nx))
+pn = np.ones((ny, nx))
 
-b = numpy.zeros((ny, nx))
+b = np.zeros((ny, nx))
 
 udiff = 1
 stepcount = 0
@@ -152,7 +155,7 @@ for timestep in range(nt):
     v[0, :] = 0
     v[-1, :]=0
     
-    # udiff = (numpy.sum(u) - numpy.sum(un)) / numpy.sum(u)
+    # udiff = (np.sum(u) - np.sum(un)) / np.sum(u)
 
     print(stepcount)
 
