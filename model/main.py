@@ -4,34 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from grid import generategrid
 from visualisation import makebox, visualisevelocityvectors
+from boundaryconditions import build_up_b, pressure_poisson_periodic, noslipatwall
 
-def pressure_poisson_periodic(p, dx, dy):
-    pn = np.empty_like(p)
-    
-    for _ in range(nit):
-        pn = p.copy()
-        p[1:-1, 1:-1] = (((pn[1:-1, 2:] + pn[1:-1, 0:-2]) * dy**2 +
-                          (pn[2:, 1:-1] + pn[0:-2, 1:-1]) * dx**2) /
-                         (2 * (dx**2 + dy**2)) -
-                         dx**2 * dy**2 / (2 * (dx**2 + dy**2)) * b[1:-1, 1:-1])
-
-        # Periodic BC Pressure @ x = right
-        p[1:-1, -1] = (((pn[1:-1, 0] + pn[1:-1, -2])* dy**2 +
-                        (pn[2:, -1] + pn[0:-2, -1]) * dx**2) /
-                       (2 * (dx**2 + dy**2)) -
-                       dx**2 * dy**2 / (2 * (dx**2 + dy**2)) * b[1:-1, -1])
-
-        # Periodic BC Pressure @ x = 0
-        p[1:-1, 0] = (((pn[1:-1, 1] + pn[1:-1, -1])* dy**2 +
-                       (pn[2:, 0] + pn[0:-2, 0]) * dx**2) /
-                      (2 * (dx**2 + dy**2)) -
-                      dx**2 * dy**2 / (2 * (dx**2 + dy**2)) * b[1:-1, 0])
-        
-        # Wall boundary conditions, pressure
-        p[-1, :] =p[-2, :]  # dp/dy = 0 at y = top
-        p[0, :] = p[1, :]  # dp/dy = 0 at y = 0
-    
-    return p
 
 
 # variable declarations
@@ -73,7 +47,8 @@ for timestep in range(nt):
     un = u.copy()
     vn = v.copy()
 
-    p = pressure_poisson_periodic(p, dx, dy)
+    b = build_up_b(rho, dt, dx, dy, u, v)
+    p = pressure_poisson_periodic(p, dx, dy, nit, b)
 
     u[1:-1, 1:-1] = (un[1:-1, 1:-1] -
                     un[1:-1, 1:-1] * dt / dx * 
@@ -150,12 +125,7 @@ for timestep in range(nt):
 
 
     # Wall BC: u,v = 0 @ y = bottom, top
-    u[0, :] = 0
-    u[-1, :] = 0
-    v[0, :] = 0
-    v[-1, :]=0
-    
-    # udiff = (np.sum(u) - np.sum(un)) / np.sum(u)
+    u, v = noslipatwall(u, v)
 
     print(stepcount)
 
@@ -163,7 +133,7 @@ for timestep in range(nt):
 
         fig = plt.figure(figsize = (11,7), dpi=100)
         makebox(gridsizex, gridsizey)
-        visualisevelocityvectors(X, Y, u, v, declutter=True)
+        visualisevelocityvectors(X, Y, u, v, declutter=False)
         plt.show()
 
     stepcount += 1
