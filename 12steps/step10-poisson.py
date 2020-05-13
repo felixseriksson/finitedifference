@@ -35,7 +35,9 @@ def plot2D(x, y, p):
     ax.set_ylabel('$y$')
     ax.set_zlabel("$z$")
     fig.colorbar(surf)
-    plt.show()
+    plt.savefig("C:\\Users\\felix\\Documents\\GitHub\\finitedifference\\12steps\\poissonpics\\"+str(it)+".png")
+    #plt.show()
+    plt.close()
 
 nx = 150
 ny = 150
@@ -70,7 +72,7 @@ for it in range(nt):
     p[ny-1, :] = 0
     p[:, 0] = 0
     p[:, nx-1] = 0
-    if it % 10 == 0:
+    if it % 1 == 0:
         plot2D(x, y, p)
 
 plot2D(x, y, p)
