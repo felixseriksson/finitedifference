@@ -25,19 +25,23 @@ def plot2D(x, y, p):
     fig = plt.figure(figsize=(11, 7), dpi=100)
     ax = fig.gca(projection='3d')
     X, Y = numpy.meshgrid(x, y)
-    ax.plot_surface(X, Y, p[:], rstride=1, cstride=1,
-                    cmap="viridis", linewidth=0, antialiased=False)
-    ax.set_xlim(0, 2)
+    surf = ax.plot_surface(X, Y, p[:], rstride=1, cstride=1,
+        cmap="autumn", antialiased=True)
+    ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
+    ax.set_zlim(-0.002,0.002)
     ax.view_init(30, 225)
     ax.set_xlabel('$x$')
     ax.set_ylabel('$y$')
+    ax.set_zlabel("$z$")
+    fig.colorbar(surf)
+    plt.show()
 
-nx = 50
-ny = 50
-nt = 100
+nx = 150
+ny = 150
+nt = 1000
 xmin = 0
-xmax = 2
+xmax = 1
 ymin = 0
 ymax = 1
 dx = (xmax - xmin) / (nx - 1)
@@ -50,8 +54,8 @@ x  = numpy.linspace(xmin, xmax, nx)
 y  = numpy.linspace(xmin, xmax, ny)
 
 # Source
-b[int(ny / 4), int(nx / 4)]  = 100
-b[int(3 * ny / 4), int(3 * nx / 4)] = -100
+b[int(ny / 2), int(nx / 4)]  = 100
+b[int(ny / 2), int(3 * nx / 4)] = -100
 
 for it in range(nt):
 
@@ -66,7 +70,7 @@ for it in range(nt):
     p[ny-1, :] = 0
     p[:, 0] = 0
     p[:, nx-1] = 0
-    if it % 20 == 0:
+    if it % 10 == 0:
         plot2D(x, y, p)
 
 plot2D(x, y, p)
